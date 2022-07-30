@@ -119,7 +119,7 @@ jobs:
                   "fields": [
                     {
                       "type": "plain_text",
-                      "text": "*Scan back-end job has failed*",
+                      "text": "*Scan back-end job failed*",
                       "emoji": true
                     }
                   ]
