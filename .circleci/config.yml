@@ -1,5 +1,8 @@
 version: 2.1
 
+orbs:
+  slack: circleci/slack@4.9.3
+
 jobs:
   build-frontend:
     docker:
@@ -76,6 +79,23 @@ jobs:
             cd frontend
             npm install
             npm audit fix --audit-level=critical --force
+      - slack/notify:
+          custom: |
+            {
+              "blocks": [
+                {
+                  "type": "section",
+                  "fields": [
+                    {
+                      "type": "plain_text",
+                      "text": "*Scan front-end job failed*",
+                      "emoji": true
+                    }
+                  ]
+                }
+              ]
+            }
+          event: fail
 
   scan-backend:
     docker:
@@ -89,7 +109,24 @@ jobs:
           command: |
             cd backend
             npm install
-            npm audit fix --audit-level=critical --force
+            npm audit --audit-level=critical
+      - slack/notify:
+          custom: |
+            {
+              "blocks": [
+                {
+                  "type": "section",
+                  "fields": [
+                    {
+                      "type": "plain_text",
+                      "text": "*Scan back-end job failed*",
+                      "emoji": true
+                    }
+                  ]
+                }
+              ]
+            }
+          event: fail
 
 workflows:
   default:
@@ -102,5 +139,7 @@ workflows:
           requires: [build-backend]
       - scan-frontend:
           requires: [build-frontend]
+          context: udapeople
       - scan-backend:
           requires: [build-backend]
+          context: udapeople
