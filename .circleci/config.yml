@@ -3,6 +3,131 @@ version: 2.1
 orbs:
   slack: circleci/slack@4.9.3
 
+commands:
+  notify-success:
+    parameters:
+      env:
+        type: string
+        default: "env"
+    steps:
+      - slack/notify:
+          event: pass
+          custom: |
+            {
+              "text": "CircleCI job succeeded!",              
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "Job Successful. :34726201:",
+                    "emoji": true
+                  }
+                },
+                {
+                  "type": "section",
+                  "fields": [
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Env*: << parameters.env >>"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Job*: ${CIRCLE_JOB}"
+                    }
+                  ]
+                },
+                {
+                  "type": "section",
+                  "fields": [
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Project*: $CIRCLE_PROJECT_REPONAME"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Branch*: $CIRCLE_BRANCH"
+                    }
+                  ]
+                },
+                {
+                  "type": "actions",
+                  "elements": [
+                    {
+                      "type": "button",
+                      "text": {
+                        "type": "plain_text",
+                        "text": "View Job"
+                      },
+                      "url": "${CIRCLE_BUILD_URL}"
+                    }
+                  ]
+                }
+              ]
+            }
+
+  notify-failure:
+    parameters:
+      env:
+        type: string
+        default: "env"
+    steps:
+      - slack/notify:
+          event: fail
+          custom: |
+            {
+              "text": "CircleCI job failure!",              
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "Job Failed. :3009034:",
+                    "emoji": true
+                  }
+                },
+                {
+                  "type": "section",
+                  "fields": [
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Env*: << parameters.env >>"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Job*: ${CIRCLE_JOB}"
+                    }
+                  ]
+                },
+                {
+                  "type": "section",
+                  "fields": [
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Project*: $CIRCLE_PROJECT_REPONAME"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Branch*: $CIRCLE_BRANCH"
+                    }
+                  ]
+                },
+                {
+                  "type": "actions",
+                  "elements": [
+                    {
+                      "type": "button",
+                      "text": {
+                        "type": "plain_text",
+                        "text": "View Job"
+                      },
+                      "url": "${CIRCLE_BUILD_URL}"
+                    }
+                  ]
+                }
+              ]
+            }
+
 jobs:
   build-frontend:
     docker:
@@ -20,6 +145,10 @@ jobs:
       - save_cache:
           paths: [frontend/node_modules]
           key: frontend-build
+      - notify-success:
+          env: "Development"
+      - notify-failure:
+          env: "Development"
 
   build-backend:
     docker:
@@ -37,6 +166,10 @@ jobs:
       - save_cache:
           paths: [backend/node_modules]
           key: backend-build
+      - notify-success:
+          env: "Development"
+      - notify-failure:
+          env: "Development"
 
   test-frontend:
     docker:
@@ -51,12 +184,16 @@ jobs:
             cd frontend
             npm install
             npm run build
-      - slack/notify:
-          event: fail
-          template: basic_fail_1
-      - slack/notify:
-          event: pass
-          template: success_tagged_deploy_1
+      - notify-success:
+          env: "Development"
+      - notify-failure:
+          env: "Development"
+      # - slack/notify:
+      #     event: fail
+      #     template: basic_fail_1
+      # - slack/notify:
+      #     event: pass
+      #     template: success_tagged_deploy_1
 
   test-backend:
     docker:
@@ -71,12 +208,16 @@ jobs:
             cd backend
             npm install
             npm run build
-      - slack/notify:
-          event: fail
-          template: basic_fail_1
-      - slack/notify:
-          event: pass
-          template: success_tagged_deploy_1
+      - notify-success:
+          env: "Development"
+      - notify-failure:
+          env: "Development"
+      # - slack/notify:
+      #     event: fail
+      #     template: basic_fail_1
+      # - slack/notify:
+      #     event: pass
+      #     template: success_tagged_deploy_1
 
   scan-frontend:
     docker:
@@ -91,12 +232,16 @@ jobs:
             cd frontend
             npm install
             npm audit fix --audit-level=critical --force
-      - slack/notify:
-          event: fail
-          template: basic_fail_1
-      - slack/notify:
-          event: pass
-          template: success_tagged_deploy_1
+      - notify-success:
+          env: "Development"
+      - notify-failure:
+          env: "Development"
+      # - slack/notify:
+      #     event: fail
+      #     template: basic_fail_1
+      # - slack/notify:
+      #     event: pass
+      #     template: success_tagged_deploy_1
 
   scan-backend:
     docker:
@@ -111,12 +256,16 @@ jobs:
             cd backend
             npm install
             npm audit fix --audit-level=critical --force
-      - slack/notify:
-          event: fail
-          template: basic_fail_1
-      - slack/notify:
-          event: pass
-          template: success_tagged_deploy_1
+      - notify-success:
+          env: "Development"
+      - notify-failure:
+          env: "Development"
+      # - slack/notify:
+      #     event: fail
+      #     template: basic_fail_1
+      # - slack/notify:
+      #     event: pass
+      #     template: success_tagged_deploy_1
 
 workflows:
   default:
@@ -125,10 +274,13 @@ workflows:
       - build-backend
       - test-frontend:
           requires: [build-frontend]
+          context: slack-secrets
       - test-backend:
           requires: [build-backend]
+          context: slack-secrets
       - scan-frontend:
           requires: [build-frontend]
+          context: slack-secrets
       - scan-backend:
           requires: [build-backend]
           context: slack-secrets
