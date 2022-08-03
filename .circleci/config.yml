@@ -9,9 +9,11 @@ commands:
       env:
         type: string
         default: "env"
+      context:
+        type: string
+        default: "slack-secrets"
     steps:
       - slack/notify:
-          context: slack-secrets
           event: pass
           custom: |
             {
@@ -72,9 +74,11 @@ commands:
       env:
         type: string
         default: "env"
+      context:
+        type: string
+        default: "slack-secrets"
     steps:
       - slack/notify:
-          context: slack-secrets
           event: fail
           custom: |
             {
@@ -148,10 +152,8 @@ jobs:
           paths: [frontend/node_modules]
           key: frontend-build
       - notify-success:
-          context: slack-secrets
           env: "Development"
       - notify-failure:
-          context: slack-secrets
           env: "Development"
 
   build-backend:
@@ -171,10 +173,8 @@ jobs:
           paths: [backend/node_modules]
           key: backend-build
       - notify-success:
-          context: slack-secrets
           env: "Development"
       - notify-failure:
-          context: slack-secrets
           env: "Development"
 
   test-frontend:
@@ -191,10 +191,8 @@ jobs:
             npm install
             npm run build
       - notify-success:
-          context: slack-secrets
           env: "Development"
       - notify-failure:
-          context: slack-secrets
           env: "Development"
       # - slack/notify:
       #     event: fail
@@ -217,10 +215,8 @@ jobs:
             npm install
             npm run build
       - notify-success:
-          context: slack-secrets
           env: "Development"
       - notify-failure:
-          context: slack-secrets
           env: "Development"
       # - slack/notify:
       #     event: fail
@@ -243,10 +239,8 @@ jobs:
             npm install
             npm audit fix --audit-level=critical --force
       - notify-success:
-          context: slack-secrets
           env: "Development"
       - notify-failure:
-          context: slack-secrets
           env: "Development"
       # - slack/notify:
       #     event: fail
@@ -269,10 +263,8 @@ jobs:
             npm install
             npm audit fix --audit-level=critical --force
       - notify-success:
-          context: slack-secrets
           env: "Development"
       - notify-failure:
-          context: slack-secrets
           env: "Development"
       # - slack/notify:
       #     event: fail
