@@ -10,6 +10,7 @@ commands:
         type: string
         default: "env"
       context:
+        type: string
         default: slack-secrets
     steps:
       - slack/notify:
