@@ -249,11 +249,30 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Validate terraform code
+          command: |
+            cd .circleci/files/terraform
+            terraform validate
+      - slack/notify:
+          event: fail
+          template: basic_fail_1
+      - slack/notify:
+          event: pass
+          template: success_tagged_deploy_1
+      - run:
           name: Create front-end infrastructure (S3)
           command: |
             cd .circleci/files/terraform
             terraform init -input=false
-            terraform plan -var='bucket_name=udapeople-${CIRCLE_WORKFLOW_ID:0:7}'
+            terraform plan -var='bucket_name=${CIRCLE_WORKFLOW_ID:0:7}'
+            terraform apply -var='bucket_name=${CIRCLE_WORKFLOW_ID:0:7}'
+      - slack/notify:
+          event: fail
+          template: basic_fail_1
+      - slack/notify:
+          event: pass
+          template:
+            success_tagged_deploy_1
 
             # aws cloudformation deploy \
             #   --template-file .circleci/files/frontend.yml \
