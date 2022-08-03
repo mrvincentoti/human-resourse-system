@@ -79,23 +79,6 @@ jobs:
             cd frontend
             npm install
             npm audit fix --audit-level=critical --force
-      - slack/notify:
-          custom: |
-            {
-              "blocks": [
-                {
-                  "type": "section",
-                  "fields": [
-                    {
-                      "type": "plain_text",
-                      "text": "*Scan front-end job failed*",
-                      "emoji": true
-                    }
-                  ]
-                }
-              ]
-            }
-          event: fail
 
   scan-backend:
     docker:
@@ -110,7 +93,22 @@ jobs:
             cd backend
             npm install
             npm audit --audit-level=critical
+
+workflows:
+  default:
+    jobs:
+      - build-frontend
+      - build-backend
+      - test-frontend:
+          requires: [build-frontend]
+      - test-backend:
+          requires: [build-backend]
+      - scan-frontend:
+          requires: [build-frontend]
+      - scan-backend:
+          requires: [build-backend]
       - slack/notify:
+          context: slack-secrets
           custom: |
             {
               "blocks": [
@@ -127,19 +125,5 @@ jobs:
               ]
             }
           event: fail
-
-workflows:
-  default:
-    jobs:
-      - build-frontend
-      - build-backend
-      - test-frontend:
-          requires: [build-frontend]
-      - test-backend:
-          requires: [build-backend]
-      - scan-frontend:
-          requires: [build-frontend]
-          context: udapeople
-      - scan-backend:
-          requires: [build-backend]
-          context: udapeople
+          requires:
+            - scan-backend
