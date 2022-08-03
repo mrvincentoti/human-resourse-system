@@ -253,7 +253,7 @@ jobs:
           command: |
             cd .circleci/files/terraform
             terraform init -input=false
-            terraform plan -var='bucket_name=udapeople-${CIRCLE_WORKFLOW_ID:0:7}
+            terraform plan -var='bucket_name=udapeople-${CIRCLE_WORKFLOW_ID:0:7}'
 
             # aws cloudformation deploy \
             #   --template-file .circleci/files/frontend.yml \
