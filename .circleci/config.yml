@@ -10,8 +10,7 @@ commands:
         type: string
         default: "env"
       context:
-        type: string
-        default: "slack-secrets"
+        default: slack-secrets
     steps:
       - slack/notify:
           event: pass
@@ -74,9 +73,6 @@ commands:
       env:
         type: string
         default: "env"
-      context:
-        type: string
-        default: "slack-secrets"
     steps:
       - slack/notify:
           event: fail
@@ -152,9 +148,7 @@ jobs:
           paths: [frontend/node_modules]
           key: frontend-build
       - notify-success:
-          env: "Development"
-      - notify-failure:
-          env: "Development"
+          context: slack-secrets
 
   build-backend:
     docker:
@@ -172,10 +166,6 @@ jobs:
       - save_cache:
           paths: [backend/node_modules]
           key: backend-build
-      - notify-success:
-          env: "Development"
-      - notify-failure:
-          env: "Development"
 
   test-frontend:
     docker:
@@ -190,16 +180,12 @@ jobs:
             cd frontend
             npm install
             npm run build
-      - notify-success:
-          env: "Development"
-      - notify-failure:
-          env: "Development"
-      # - slack/notify:
-      #     event: fail
-      #     template: basic_fail_1
-      # - slack/notify:
-      #     event: pass
-      #     template: success_tagged_deploy_1
+      - slack/notify:
+          event: fail
+          template: basic_fail_1
+      - slack/notify:
+          event: pass
+          template: success_tagged_deploy_1
 
   test-backend:
     docker:
@@ -214,16 +200,12 @@ jobs:
             cd backend
             npm install
             npm run build
-      - notify-success:
-          env: "Development"
-      - notify-failure:
-          env: "Development"
-      # - slack/notify:
-      #     event: fail
-      #     template: basic_fail_1
-      # - slack/notify:
-      #     event: pass
-      #     template: success_tagged_deploy_1
+      - slack/notify:
+          event: fail
+          template: basic_fail_1
+      - slack/notify:
+          event: pass
+          template: success_tagged_deploy_1
 
   scan-frontend:
     docker:
@@ -238,16 +220,12 @@ jobs:
             cd frontend
             npm install
             npm audit fix --audit-level=critical --force
-      - notify-success:
-          env: "Development"
-      - notify-failure:
-          env: "Development"
-      # - slack/notify:
-      #     event: fail
-      #     template: basic_fail_1
-      # - slack/notify:
-      #     event: pass
-      #     template: success_tagged_deploy_1
+      - slack/notify:
+          event: fail
+          template: basic_fail_1
+      - slack/notify:
+          event: pass
+          template: success_tagged_deploy_1
 
   scan-backend:
     docker:
@@ -262,16 +240,12 @@ jobs:
             cd backend
             npm install
             npm audit fix --audit-level=critical --force
-      - notify-success:
-          env: "Development"
-      - notify-failure:
-          env: "Development"
-      # - slack/notify:
-      #     event: fail
-      #     template: basic_fail_1
-      # - slack/notify:
-      #     event: pass
-      #     template: success_tagged_deploy_1
+      - slack/notify:
+          event: fail
+          template: basic_fail_1
+      - slack/notify:
+          event: pass
+          template: success_tagged_deploy_1
 
 workflows:
   default:
