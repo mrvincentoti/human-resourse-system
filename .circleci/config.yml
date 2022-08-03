@@ -248,7 +248,6 @@ jobs:
       - image: docker.mirror.hashicorp.services/hashicorp/terraform:light
     steps:
       - checkout
-      - run: yum install -y tar gzip
       - run:
           name: Create front-end infrastructure
           command: |
