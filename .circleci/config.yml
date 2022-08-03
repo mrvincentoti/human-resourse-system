@@ -249,7 +249,7 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Create front-end infrastructure
+          name: Create front-end infrastructure (S3)
           command: |
             cd .circleci/files/terraform
             terraform init -input=false
