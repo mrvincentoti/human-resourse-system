@@ -271,7 +271,7 @@ jobs:
             terraform init -input=false
             terraform validate
             terraform plan -var "bucket_name=${WorkflowID}" -out=plan-"${WorkflowID}"
-            terraform apply plan-"${WorkflowID}" -var "bucket_name=${WorkflowID}" -auto-approve
+            terraform apply plan-"${WorkflowID}"
             # terraform apply plan-"${WorkflowID}" -var "bucket_name=${WorkflowID}" -auto-approve
       - slack/notify:
           event: fail
