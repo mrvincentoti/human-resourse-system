@@ -252,7 +252,7 @@ jobs:
           name: Install terraform
           command: |
             apk add --update --no-cache terraform --repository=https://dl-cdn.alpinelinux.org/alpine/edge/community
-            apk add --update --no-cache tar gzip
+            apk add --update --no-cache tar gzip curl
       - run:
           name: Create front-end infrastructure (S3)
           command: |
