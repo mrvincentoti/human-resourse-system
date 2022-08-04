@@ -245,9 +245,14 @@ jobs:
 
   deploy-infrastructure:
     docker:
-      - image: docker.mirror.hashicorp.services/hashicorp/terraform:light
+      - image: python:3.10-alpine3.16
     steps:
       - checkout
+      - run:
+          name: Install terraform
+          command: |
+            apk add --update --no-cache terraform --repository=https://dl-cdn.alpinelinux.org/alpine/edge/community
+            apk add --update --no-cache tar gzip
       - run:
           name: Create front-end infrastructure (S3)
           command: |
