@@ -257,8 +257,8 @@ jobs:
             cd .circleci/files/terraform
             terraform init -input=false
             terraform validate
-            terraform plan -var bucket_name=echo $WorkflowID
-            terraform apply -var bucket_name=echo $WorkflowID -auto-approve
+            terraform plan -var "bucket_name=${WorkflowID}"
+            terraform apply -var "bucket_name=${WorkflowID}" -auto-approve
       - slack/notify:
           event: fail
           template: basic_fail_1
