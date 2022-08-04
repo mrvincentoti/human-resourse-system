@@ -128,6 +128,23 @@ commands:
               ]
             }
 
+  destroy-environment:
+    description: Destroy front-end terraform stacks given a workflow ID.
+    parameters:
+      workflow_id:
+        type: string
+        default: 123456
+    steps:
+      - run:
+          name: Destroy environments
+          when: on_fail
+          command: |
+            echo "Destroying environment: << parameters.workflow_id >>"
+            aws cloudformation delete-stack \
+            --stack-name udapeople-backend-<<parameters.workflow_id>>
+            aws s3 rm s3://udapeople-<<parameters.workflow_id>> --recursive
+            aws cloudformation delete-stack \
+            --stack-name udapeople-frontend-<<parameters.workflow_id>>
 jobs:
   build-frontend:
     docker:
@@ -262,15 +279,21 @@ jobs:
             cd .circleci/files/terraform
             terraform init -input=false
             terraform validate
-            terraform plan -var "bucket_name=${WorkflowID}"
-            terraform apply -var "bucket_name=${WorkflowID}" -auto-approve
+            terraform plan -var "bucket_name=${WorkflowID}" -out=plan-"${WorkflowID}"
+            terraform apply plan-"${WorkflowID}" -var "bucket_name=${WorkflowID}" -auto-approve
       - slack/notify:
           event: fail
           template: basic_fail_1
       - slack/notify:
           event: pass
-          template:
-            success_tagged_deploy_1
+          template: success_tagged_deploy_1
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - project/.circleci/files/terraform
+      - destroy-environment:
+          workflow_id:
+            ${CIRCLE_WORKFLOW_ID:0:7}
 
             # aws cloudformation deploy \
             #   --template-file .circleci/files/frontend.yml \
