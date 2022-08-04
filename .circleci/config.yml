@@ -128,23 +128,14 @@ commands:
               ]
             }
 
-  # destroy-environment:
-  #   description: Destroy front-end terraform stacks given a workflow ID.
-  #   parameters:
-  #     workflow_id:
-  #       type: string
-  #       default: 123456
-  #   steps:
-  #     - run:
-  #         name: Destroy environments
-  #         when: on_fail
-  #         command: |
-  #           echo "Destroying environment: << parameters.workflow_id >>"
-  #           aws cloudformation delete-stack \
-  #           --stack-name udapeople-backend-<<parameters.workflow_id>>
-  #           aws s3 rm s3://udapeople-<<parameters.workflow_id>> --recursive
-  #           aws cloudformation delete-stack \
-  #           --stack-name udapeople-frontend-<<parameters.workflow_id>>
+  destroy-environment:
+    description: Destroy front-end terraform stacks given a workflow ID.
+    steps:
+      - run:
+          name: Destroy environments
+          when: on_fail
+          command: |
+            terraform destroy -auto-approve
 jobs:
   build-frontend:
     docker:
@@ -280,7 +271,7 @@ jobs:
             terraform init -input=false
             terraform validate
             terraform plan -var "bucket_name=${WorkflowID}" -out=plan-"${WorkflowID}"
-            terraform apply plan-"${WorkflowID}"
+            terraform apply plan-"${WorkflowID}" -var "bucket_name=${WorkflowID}" -auto-approve
             # terraform apply plan-"${WorkflowID}" -var "bucket_name=${WorkflowID}" -auto-approve
       - slack/notify:
           event: fail
@@ -292,15 +283,7 @@ jobs:
           root: ~/
           paths:
             - project/.circleci/files/terraform
-      # - destroy-environment:
-      #     workflow_id:
-      #       ${CIRCLE_WORKFLOW_ID:0:7}
-
-      # aws cloudformation deploy \
-      #   --template-file .circleci/files/frontend.yml \
-      #   --tags project=udapeople \
-      #    --stack-name udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7} \
-      #    --parameter-overrides ID=${CIRCLE_WORKFLOW_ID:0:7}
+      - destroy-environment
 workflows:
   default:
     jobs:
