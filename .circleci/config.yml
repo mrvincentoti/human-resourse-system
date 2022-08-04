@@ -252,13 +252,13 @@ jobs:
           name: Create front-end infrastructure (S3)
           command: |
             export WorkflowID=${CIRCLE_WORKFLOW_ID:0:7}
-            echo WorkflowID
+            echo ${WorkflowID}
 
-            cd .circleci/files/terraform
-            terraform init -input=false
-            terraform validate
-            terraform plan -var='bucket_name=${WorkflowID}'
-            terraform apply -var='bucket_name=${WorkflowID}' -auto-approve
+            # cd .circleci/files/terraform
+            # terraform init -input=false
+            # terraform validate
+            # terraform plan -var='bucket_name=${WorkflowID}'
+            # terraform apply -var='bucket_name=${WorkflowID}' -auto-approve
       - slack/notify:
           event: fail
           template: basic_fail_1
