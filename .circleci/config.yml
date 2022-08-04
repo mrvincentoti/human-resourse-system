@@ -255,7 +255,7 @@ jobs:
             terraform init -input=false
             terraform validate
             terraform plan -var='bucket_name=${CIRCLE_WORKFLOW_ID:0:7}'
-            terraform apply -var='bucket_name=${CIRCLE_WORKFLOW_ID:0:7}'
+            terraform apply -var='bucket_name=${CIRCLE_WORKFLOW_ID:0:7}' -input=false
       - slack/notify:
           event: fail
           template: basic_fail_1
