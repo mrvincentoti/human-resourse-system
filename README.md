@@ -27,4 +27,4 @@ This project is the implementation of a CI/CD pipeline for a human resource prod
 3. Set up CircleCI
    - Set up a CircleCI free account, if you haven't already, that you can use throughout this project.
    - Create a new project in CircleCI using your project (forked) GitHub repo.
-4. Make your changes and push to git
+4. Make changes on your local system as required and push to git
