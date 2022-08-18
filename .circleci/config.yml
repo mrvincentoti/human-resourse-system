@@ -273,6 +273,15 @@ jobs:
             terraform plan -var "bucket_name=${WorkflowID}" -out=plan-"${WorkflowID}"
             terraform apply plan-"${WorkflowID}"
             # terraform apply plan-"${WorkflowID}" -var "bucket_name=${WorkflowID}" -auto-approve
+
+      - run:
+          name: Add back-end ip address to ansible inventory
+          command: |
+            echo $(aws ec2 describe-instances \
+            --query 'Reservations[*].Instances[*].PublicIpAddress' \
+            --output text) >> ~/project/.circleci/ansible/inventory.txt
+            cat ~/project/.circleci/ansible/inventory.txt
+
       - slack/notify:
           event: fail
           template: basic_fail_1
@@ -296,6 +305,16 @@ jobs:
           name: Install deps
           command: |
             apk add --update --no-cache tar gzip nodejs npm ansible curl aws-cli
+      - run:
+          name: Get backend url
+          command: |
+            export BACKEND_IP=$(aws ec2 describe-instances \
+            --query 'Reservations[*].Instances[*].PublicIpAddress' \
+            --output text)
+            export API_URL="http://${BACKEND_IP}:3030"
+            echo "API_URL = ${API_URL}"
+            echo "API_URL=http://${BACKEND_IP}:3030" >> frontend/.env
+            cat frontend/.env
       - run:
           name: Deploy frontend objects
           command: |
