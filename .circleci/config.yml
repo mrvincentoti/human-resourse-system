@@ -291,7 +291,7 @@ jobs:
       - persist_to_workspace:
           root: ~/
           paths:
-            - project/.circleci/files/terraform
+            - project/.circleci/ansible/inventory.txt
       - destroy-environment
 
   configure-infrastructure:
